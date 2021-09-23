@@ -1,0 +1,107 @@
+version: '3'
+
+services:
+
+  web:
+    restart: always
+    build: ./web
+    expose:
+      - "8000"
+    links:
+      - mongo:mongo
+      - redis:redis
+    volumes:
+      - web-django:/usr/src/app
+      - web-static:/usr/src/app/static
+    env_file: .env.prod
+    environment:
+      DEBUG: 'true'
+    command: /usr/local/bin/gunicorn docker_django.wsgi:application -w 2 -b :8000
+
+  nginx-proxy:
+    container_name: nginx-proxy
+    image: jwilder/nginx-proxy
+    build: ./nginx/
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - web-static:/www/static
+      - media_volume:/www/media
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - conf:/etc/nginx/conf.d
+    networks:
+      - proxy
+
+  nginx-proxy-gen:
+    container_name: nginx-proxy-gen
+    image: nginxproxy/docker-gen
+    command: -notify-sighup nginx-proxy -watch /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs:ro
+      - ./nginx/nginx.tmpl:/etc/docker-gen..
+      - conf:/etc/nginx/conf.d
+
+  nginx-proxy-letsencrypt:
+    image: nginxproxy/acme-companion
+    env_file:
+        - .env.prod.proxy-companion
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - acme:/etc/acme.sh
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+
+  mongo:
+    image: mongo
+    restart: always
+    env_file:
+      - ./mongo/.env.prod
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    env_file:
+      - ./mongo-express/.env.prod
+
+  redis:
+    restart: always
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+  celery:
+    build: ./web
+    command: celery -A xpinnit worker -l info
+    volumes:
+      - celerydata:/usr/src/app/
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    depends_on:
+          - redis
+volumes:
+  web-django:
+  web-static:
+  acme:
+  redisdata:
+  html:
+  vhost:
+  conf:
+  media_volume:
+  certs:
+  celerydata:
+
+networks:
+  proxy:
+    external:
+      name: nginx-proxy
