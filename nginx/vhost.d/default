@@ -1,0 +1,10 @@
+
+location /static/     {
+    alias /home/app/api/static/;
+    add_header Access-Control-Allow-Origin *;
+}
+
+location /media/     {
+    alias /home/app/api/media/;
+    add_header Access-Control-Allow-Origin *;
+}
