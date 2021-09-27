@@ -1,11 +1,11 @@
 server {
 
     listen 80;
-    server_name example.org;
+    server_name sistema2.xpinnit.com;
     charset utf-8;
 
     location = /static/favicon.svg { 
-        root /home/<user>/<project_name>;
+        root /home/app/xpinnit_api/web;
     }
 
     location /static {
