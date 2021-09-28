@@ -3,7 +3,6 @@ version: '3'
 services:
 
   web:
-    restart: always
     build: ./web
     expose:
       - 8000
@@ -15,7 +14,9 @@ services:
       - web-static:/home/app/xpinnit_api/web/static/
     env_file:
       - ./.env.prod
-    command: /usr/local/bin/gunicorn docker_django.wsgi:application -w 2 -b :8000
+    command: gunicorn docker_django.wsgi:application -w 2 --bind 0.0.0:8000
+    networks:
+      - proxy
 
   nginx-proxy:
     restart: always
