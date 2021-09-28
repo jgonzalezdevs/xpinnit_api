@@ -15,7 +15,7 @@ RUN addgroup -S app && adduser -S app -G app
 
 # create the appropriate directories
 ENV HOME=/home/app
-ENV APP_HOME=/home/app/api
+ENV APP_HOME=/home/app/xpinnit_api/web
 RUN mkdir $APP_HOME
 RUN mkdir $APP_HOME/static
 RUN mkdir $APP_HOME/media

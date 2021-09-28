@@ -83,16 +83,14 @@ WSGI_APPLICATION = 'docker_django.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASS'],
-        'HOST': os.environ['DB_SERVICE'],
-        'PORT': os.environ['DB_PORT']
-    }
-}
+import mongoengine
+
+mongoengine.connect(
+    db=os.environ['DB_NAME'],
+    host=os.environ['DB_SERVICE'],
+    username=os.environ['DB_USER'],
+    password=os.environ['DB_PASS']
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

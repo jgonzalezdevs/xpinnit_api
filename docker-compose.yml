@@ -14,8 +14,6 @@ services:
       - web-django:/usr/src/app
       - web-static:/usr/src/app/static
     env_file: .env.prod
-    environment:
-      DEBUG: 'true'
     command: /usr/local/bin/gunicorn docker_django.wsgi:application -w 2 -b :8000
 
   nginx-proxy:
