@@ -115,3 +115,10 @@ STATIC_URL = '/static/'
 # )
 # print(STATICFILES_DIRS)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+# Celery Configuration Options
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TIMEZONE = "UTC"
