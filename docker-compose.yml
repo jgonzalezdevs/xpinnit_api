@@ -6,7 +6,7 @@ services:
     restart: always
     build: ./web
     expose:
-      - "8000"
+      - 8000
     links:
       - mongo:mongo
       - redis:redis
@@ -20,7 +20,7 @@ services:
   nginx-proxy:
     container_name: nginx-proxy
     image: jwilder/nginx-proxy
-    build: ./nginx/
+    build: nginx
     ports:
       - 443:443
       - 80:80
