@@ -87,7 +87,7 @@ import mongoengine
 
 mongoengine.connect(
     db=os.environ['DB_NAME'],
-    host=os.environ['DB_SERVICE'],
+    host=os.environ['DB_HOST'],
     username=os.environ['DB_USER'],
     password=os.environ['DB_PASS']
 )
