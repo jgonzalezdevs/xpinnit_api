@@ -6,9 +6,6 @@ services:
     build: ./web
     expose:
       - 8000
-    links:
-      - mongo:mongo
-      - redis:redis
     volumes:
       - ./web:/home/app/xpinnit_api/web/
       - web-static:/home/app/xpinnit_api/web/static/
@@ -62,6 +59,8 @@ services:
     restart: always
     env_file:
       - ./mongo/.env.prod
+    networks:
+      - proxy
 
   mongo-express:
     image: mongo-express
@@ -70,6 +69,8 @@ services:
       - 8081:8081
     env_file:
       - ./mongo-express/.env.prod
+    networks:
+      - proxy
 
   redis:
     restart: always
@@ -78,6 +79,9 @@ services:
       - 6379:6379
     volumes:
       - redisdata:/data
+    networks:
+      - proxy
+
   celery:
     build: ./web
     command: celery -A docker_django worker -l info
@@ -88,6 +92,9 @@ services:
       - celerydata:/usr/src/app/
     depends_on:
       - redis
+    networks:
+      - proxy
+
 volumes:
   web-static:
   acme:
