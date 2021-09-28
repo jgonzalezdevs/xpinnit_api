@@ -22,8 +22,8 @@ services:
     image: jwilder/nginx-proxy
     build: ./nginx/
     ports:
-      - "443:443"
-      - "80:80"
+      - 443:443
+      - 80:80
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - web-static:/www/static
@@ -74,7 +74,7 @@ services:
     restart: always
     image: redis:latest
     ports:
-      - "6379:6379"
+      - 6379:6379
     volumes:
       - redisdata:/data
   celery:
