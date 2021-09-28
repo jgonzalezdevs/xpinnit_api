@@ -9,6 +9,7 @@ COPY . .
 
 # create directory for the app user
 RUN mkdir -p /home/app
+RUN mkdir -p /home/app/xpinnit_api
 
 # create the app user
 RUN addgroup -S app && adduser -S app -G app

@@ -11,8 +11,8 @@ services:
       - mongo:mongo
       - redis:redis
     volumes:
-      - web-django:/usr/src/app
-      - web-static:/usr/src/app/static
+      - ./web:/home/app/xpinnit_api/web/
+      - web-static:/home/app/xpinnit_api/web/static/
     env_file:
       - ./.env.prod
     command: /usr/local/bin/gunicorn docker_django.wsgi:application -w 2 -b :8000
@@ -42,15 +42,15 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - certs:/etc/nginx/certs:ro
-      - ./nginx/nginx.tmpl:/etc/docker-gen..
+      - ./nginx/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro
       - conf:/etc/nginx/conf.d
 
   nginx-proxy-letsencrypt:
     image: nginxproxy/acme-companion
     env_file:
-        - .env.prod.proxy-companion
+      - .env.prod.proxy-companion
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - acme:/etc/acme.sh
       - certs:/etc/nginx/certs
       - html:/usr/share/nginx/html
@@ -79,13 +79,15 @@ services:
       - redisdata:/data
   celery:
     build: ./web
-    command: celery -A xpinnit worker -l info
+    command: celery -A docker_django worker -l info
+    env_file:
+      - ./.env.prod
     volumes:
+      - ./web:/home/app/xpinnit_api/web/
       - celerydata:/usr/src/app/
     depends_on:
-          - redis
+      - redis
 volumes:
-  web-django:
   web-static:
   acme:
   redisdata:
